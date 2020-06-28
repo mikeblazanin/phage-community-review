@@ -3,9 +3,9 @@ library(dplyr)
 
 ##Read in Mumford data ----
 
-mum_phg <- read.csv("./Mumford & Friman data/Raw/Phagedensitydata.csv",
+mum_phg <- read.csv("./Raw_data/Mumford & Friman/Phagedensitydata.csv",
                     stringsAsFactors = F)
-mum_bact <- read.csv("./Mumford & Friman data/Raw/Pseudomonasdensitydata.csv",
+mum_bact <- read.csv("./Raw_data/Mumford & Friman/Pseudomonasdensitydata.csv",
                      stringsAsFactors = F)
 
 ##Make a community column in bact that is same as phage version
