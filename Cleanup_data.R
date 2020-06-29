@@ -1,3 +1,4 @@
+##Load libraries ----
 library(tidyr)
 library(dplyr)
 
@@ -54,6 +55,7 @@ mum_data <- select(mum_data, Pseudomonas, Competitor.Community,
 mum_data$Pop[mum_data$Pop == "PhagesPerML"] <- "PT7"
 mum_data$Pop[mum_data$Pop == "PseudomonasCFUperml"] <- "P_aeruginosa"
 mum_data$Competitor.Community[mum_data$Competitor.Community == 0] <- "None"
+colnames(mum_data)[1:2] <- c("Focal_strain", "Competitor_community")
 mum_data <- mum_data[complete.cases(mum_data),]
 
 #Output clean data
@@ -100,12 +102,11 @@ alseth_bact$Treatment <- gsub("MC", "AB+BC+SA", alseth_bact$Treatment)
 alseth_bact$Pop <- sapply(alseth_bact$Primer.set,
                           FUN = function(x) {strsplit(x, split = " ")[[1]][1]})
 
-tiff("ct_quantity.tiff", width = 6, height = 4, units = "in", res = 300)
-ggplot(data = alseth_bact, aes(x = CT, y = Quantity, 
-                               color = Pop, shape = Treatment)) + 
-  geom_point() + 
-  scale_y_continuous(trans = "log10")
-dev.off()
+#Create Density column (qPCR was measured on 500 uL samples)
+alseth_bact$Density <- alseth_bact$Quantity*2
+
+#Add repeat information to phage
+alseth_phg$Repeat <- rep_len(1:6, len = nrow(alseth_phg))
 
 #Pivot phage into tidy format
 alseth_phg <- pivot_longer(alseth_phg,
@@ -114,14 +115,31 @@ alseth_phg <- pivot_longer(alseth_phg,
                            values_to = "Density")
 
 #Cleanup phage for merge
-alseth_phg$Time_day <- gsub("T", "", alseth_phg$Time_day)
+alseth_phg$Time_day <- as.numeric(gsub("T", "", alseth_phg$Time_day))
 alseth_phg$Treatment <- gsub(" ", "", alseth_phg$Treatment)
 alseth_phg$Treatment <- gsub("MC", "AB+BC+SA", alseth_phg$Treatment)
+alseth_phg$Pop <- "DMS3vir"
+alseth_phg$PhagePresence <- 1
 
+#Merge
+alseth_data <- full_join(alseth_bact, alseth_phg)
 
+#Split Treatment into Focal strain & Competitor Community
+alseth_data$Focal_strain <- sapply(alseth_data$Treatment,
+                                   function(x) {strsplit(x, "\\+")[[1]][1]})
+alseth_data$Competitor_community <- 
+  sapply(alseth_data$Treatment, function(x) {
+    temp <- strsplit(x, "\\+")[[1]]
+    if (length(temp) <= 1) {return("None")
+    } else {return(paste(temp[2:length(temp)], collapse = "+"))
+    }
+  })
+                                           
 
+#Drop columns we don't need
+alseth_data <- select(alseth_data, Focal_strain, Competitor_community,
+                      PhagePresence, Time_day, Repeat, Pop, Density)
 
-
-
-
-
+#Output clean data
+write.csv(alseth_data, "./Clean_data/alseth_et_al_data.csv",
+          row.names = FALSE)
