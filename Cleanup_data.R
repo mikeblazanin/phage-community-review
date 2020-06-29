@@ -58,10 +58,8 @@ mum_data$Competitor.Community[mum_data$Competitor.Community == 0] <- "None"
 colnames(mum_data)[1:2] <- c("Focal_strain", "Competitor_community")
 mum_data <- mum_data[complete.cases(mum_data),]
 
-#Output clean data
-write.csv(mum_data,
-          "./Clean_data/mumford_friman_data.csv",
-          row.names = FALSE)
+#Add study info
+mum_data$Study <- "Mumford_Friman"
 
 ##Clean up Alseth data ----
 
@@ -140,6 +138,13 @@ alseth_data$Competitor_community <-
 alseth_data <- select(alseth_data, Focal_strain, Competitor_community,
                       PhagePresence, Time_day, Repeat, Pop, Density)
 
+#Add study name
+alseth_data$Study <- "Alseth_etal"
+
+#Merge studies together
+all_data <- full_join(mum_data, alseth_data)
+
 #Output clean data
-write.csv(alseth_data, "./Clean_data/alseth_et_al_data.csv",
+write.csv(all_data,
+          "./Clean_data/cleaned_merged_data.csv",
           row.names = FALSE)
