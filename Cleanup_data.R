@@ -78,6 +78,13 @@ for (bact_fil in c("qPCR results Evolution Experiment no. 4 T0.csv",
   i <- i+1
 }
 
+#Add Repeat to T0
+alseth_bact_list[[1]]$Rep_pop <- "Inoc"
+#Convert non T0 repeat to character
+for (i in 2:length(alseth_bact_list)) {
+  alseth_bact_list[[i]]$Rep_pop <- as.character(alseth_bact_list[[i]]$Repeat)
+}
+
 #Add timepoint info to bact dataframes & merge to one dataframe
 for (i in 1:length(alseth_bact_list)) {
   alseth_bact_list[[i]] <- cbind(alseth_bact_list[[i]],
@@ -104,7 +111,7 @@ alseth_bact$Pop <- sapply(alseth_bact$Primer.set,
 alseth_bact$Density <- alseth_bact$Quantity*2
 
 #Add repeat information to phage
-alseth_phg$Repeat <- rep_len(1:6, len = nrow(alseth_phg))
+alseth_phg$Rep_pop <- as.character(rep_len(1:6, len = nrow(alseth_phg)))
 
 #Pivot phage into tidy format
 alseth_phg <- pivot_longer(alseth_phg,
@@ -136,7 +143,7 @@ alseth_data$Competitor_community <-
 
 #Drop columns we don't need
 alseth_data <- select(alseth_data, Focal_strain, Competitor_community,
-                      PhagePresence, Time_day, Repeat, Pop, Density)
+                      PhagePresence, Time_day, Rep_pop, Pop, Density)
 
 #Add study name
 alseth_data$Study <- "Alseth_etal"
