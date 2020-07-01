@@ -30,10 +30,14 @@ mum_phg$Time_day <- mum_phg$Time*4
 #Add Time_day to mum_bact (only measured bact on last day)
 mum_bact$Time_day <- 16
 
+#Add in Rep_pop column (assuming pops are listed in consistent order)
+mum_bact$Rep_pop <- as.character(rep_len(1:5, nrow(mum_bact)))
+mum_phg$Rep_pop <- as.character(rep_len(1:5, nrow(mum_phg)))
+
 #Join dataframes together
 mum_data <- full_join(mum_phg, mum_bact,
                       by = c("Pseudomonas", "Competitor.Community",
-                             "PhagePresence", "Time_day"))
+                             "PhagePresence", "Time_day", "Rep_pop"))
 
 #Pivot densities into one column
 mum_data <- pivot_longer(mum_data,
@@ -44,14 +48,14 @@ mum_data <- pivot_longer(mum_data,
 ##Tidy up
 
 #Shared columns: Time_day, Pseudomonas, Competitor.Community,
-#                 PhagePresence, Pop, Density
+#                 PhagePresence, Pop, Density, Rep_pop
 #Uniq cols: Competitor community (for phg includes only non-PA, for bact includes all)
 #           PhagePresence (absent from phage dataframe)
 #           QS (absent from phage dataframe) - but just a shorthand for PAO vs lasR
 #           Treatmentcode - absent from bact, 
 #                           just shorthand for Pseudomonas - Competitor combinations
 mum_data <- select(mum_data, Pseudomonas, Competitor.Community,
-                   PhagePresence, Time_day, Pop, Density)
+                   PhagePresence, Time_day, Pop, Density, Rep_pop)
 mum_data$Pop[mum_data$Pop == "PhagesPerML"] <- "PT7"
 mum_data$Pop[mum_data$Pop == "PseudomonasCFUperml"] <- "P_aeruginosa"
 mum_data$Competitor.Community[mum_data$Competitor.Community == 0] <- "None"
