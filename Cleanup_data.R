@@ -178,6 +178,8 @@ johnke_data$Bact_community <-
   ifelse(johnke_data$Competitor_community == "None",
          substr(johnke_data$prey.predator, 1, 1),
          johnke_data$Competitor_community)
+johnke_data$Bact_community[johnke_data$Competitor_community == "None" &
+                             johnke_data$prey.predator == "Phage"] <- "K"
                                      
 johnke_data$Time_day <- johnke_data$time..h/24
 johnke_data$Focal_strain <- "Klebsiella"
