@@ -45,21 +45,28 @@ mum_data <- pivot_longer(mum_data,
                          names_to = "Pop",
                          values_to = "Density")
 
+#Fix up the Competitor community info to be entire bacterial community
+mum_data$Competitor.Community[mum_data$Competitor.Community == 0] <- "None"
+mum_data$Bact_community <- recode(mum_data$Competitor.Community,
+                                  None = "Pa")
+mum_data$Bact_community[mum_data$Bact_community != "Pa"] <-
+  paste("Pa+", mum_data$Bact_community[mum_data$Bact_community != "Pa"],
+        sep = "")
+
 ##Tidy up
 
-#Shared columns: Time_day, Pseudomonas, Competitor.Community,
-#                 PhagePresence, Pop, Density, Rep_pop
+#Shared columns: Time_day, Pseudomonas, Bact_Community,
+#                 Phage_Presence, Pop, Density, Rep_pop
 #Uniq cols: Competitor community (for phg includes only non-PA, for bact includes all)
-#           PhagePresence (absent from phage dataframe)
+#           Phage_Presence (absent from phage dataframe)
 #           QS (absent from phage dataframe) - but just a shorthand for PAO vs lasR
 #           Treatmentcode - absent from bact, 
 #                           just shorthand for Pseudomonas - Competitor combinations
-mum_data <- select(mum_data, Pseudomonas, Competitor.Community,
+mum_data <- select(mum_data, Pseudomonas, Bact_community,
                    PhagePresence, Time_day, Pop, Density, Rep_pop)
-mum_data$Pop[mum_data$Pop == "PhagesPerML"] <- "PT7"
-mum_data$Pop[mum_data$Pop == "PseudomonasCFUperml"] <- "P_aeruginosa"
-mum_data$Competitor.Community[mum_data$Competitor.Community == 0] <- "None"
-colnames(mum_data)[1:2] <- c("Focal_strain", "Competitor_community")
+mum_data$Pop <- recode(mum_data$Pop, "PhagesPerML" = "PT7", 
+                       "PseudomonasCFUperml" = "P_aeruginosa")
+colnames(mum_data)[c(1, 3)] <- c("Focal_strain", "Phage_presence")
 mum_data <- mum_data[complete.cases(mum_data),]
 
 #Add study info
@@ -101,7 +108,7 @@ alseth_bact <- Reduce(
 alseth_bact <- alseth_bact[alseth_bact$Treatment != "", ]
 
 #All bacterial-density measures are from with-phage treatments
-alseth_bact$PhagePresence <- 1
+alseth_bact$Phage_presence <- 1
 
 #Clean up Treatment
 alseth_bact$Treatment <- gsub(" and ", "+", alseth_bact$Treatment)
@@ -128,7 +135,7 @@ alseth_phg$Time_day <- as.numeric(gsub("T", "", alseth_phg$Time_day))
 alseth_phg$Treatment <- gsub(" ", "", alseth_phg$Treatment)
 alseth_phg$Treatment <- gsub("MC", "AB+BC+SA", alseth_phg$Treatment)
 alseth_phg$Pop <- "DMS3vir"
-alseth_phg$PhagePresence <- 1
+alseth_phg$Phage_presence <- 1
 
 #Merge
 alseth_data <- full_join(alseth_bact, alseth_phg)
@@ -136,18 +143,11 @@ alseth_data <- full_join(alseth_bact, alseth_phg)
 #Split Treatment into Focal strain & Competitor Community
 alseth_data$Focal_strain <- sapply(alseth_data$Treatment,
                                    function(x) {strsplit(x, "\\+")[[1]][1]})
-alseth_data$Competitor_community <- 
-  sapply(alseth_data$Treatment, function(x) {
-    temp <- strsplit(x, "\\+")[[1]]
-    if (length(temp) <= 1) {return("None")
-    } else {return(paste(temp[2:length(temp)], collapse = "+"))
-    }
-  })
-                                           
+alseth_data$Bact_community <- gsub("PA14", "PA", alseth_data$Treatment)
 
 #Drop columns we don't need
-alseth_data <- select(alseth_data, Focal_strain, Competitor_community,
-                      PhagePresence, Time_day, Rep_pop, Pop, Density)
+alseth_data <- select(alseth_data, Focal_strain, Bact_community,
+                      Phage_presence, Time_day, Rep_pop, Pop, Density)
 
 #Add study name
 alseth_data$Study <- "Alseth_etal"
@@ -164,17 +164,21 @@ johnke_data <- johnke_data[johnke_data$info %in%
                                "Phage, I", "Phage, II"), ]
 
 #Rename & relevel variables
-johnke_data$PhagePresence <- 
+johnke_data$Phage_presence <- 
   sapply(johnke_data$info, FUN = function(x) {strsplit(x, split = ", ")[[1]][1]})
-johnke_data$PhagePresence <- recode(johnke_data$PhagePresence,
+johnke_data$Phage_presence <- recode(johnke_data$Phage_presence,
                                     Phage = 1, `no predator` = 0)
 
 johnke_data$Competitor_community <- 
   sapply(johnke_data$info, FUN = function(x) {strsplit(x, split = ", ")[[1]][2]})
 johnke_data$Competitor_community <- recode(johnke_data$Competitor_community,
                                            `CI ` = "None", I = "None",
-                                           CII = "P+S", II = "P+S")
-
+                                           CII = "K+P+S", II = "K+P+S")
+johnke_data$Bact_community <- 
+  ifelse(johnke_data$Competitor_community == "None",
+         substr(johnke_data$prey.predator, 1, 1),
+         johnke_data$Competitor_community)
+                                     
 johnke_data$Time_day <- johnke_data$time..h/24
 johnke_data$Focal_strain <- "Klebsiella"
 johnke_data$Pop <- recode(johnke_data$prey.predator,
@@ -184,8 +188,8 @@ johnke_data$Rep_pop <- as.character(1:nrow(johnke_data))
 johnke_data$Study <- "Johnke_etal"
 
 #Drop unneeded columns
-johnke_data <- johnke_data[ , c("Focal_strain", "Competitor_community",
-                                "PhagePresence", "Time_day", "Pop", "Density",
+johnke_data <- johnke_data[ , c("Focal_strain", "Bact_community",
+                                "Phage_presence", "Time_day", "Pop", "Density",
                                 "Rep_pop", "Study")]
 
 ##Merge studies together ----
