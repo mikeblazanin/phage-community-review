@@ -1,0 +1,515 @@
+info,prey/predator,cell count/ml,time (h)
+"no predator, CI ",Klebsiella,9333333.333,0
+"no predator, CI ",Klebsiella,8166666.667,0
+"no predator, CI ",Pseudomonas,2350000,0
+"no predator, CI ",Pseudomonas,1737500,0
+"no predator, CI ",Staphylococcus,30000000,0
+"no predator, CI ",Staphylococcus,27500000,0
+"no predator, CI ",Klebsiella,261666666.7,24
+"no predator, CI ",Klebsiella,349166666.7,24
+"no predator, CI ",Pseudomonas,123333333.3,24
+"no predator, CI ",Pseudomonas,113333333.3,24
+"no predator, CI ",Staphylococcus,2550000,24
+"no predator, CI ",Staphylococcus,5833333.333,24
+"no predator, CI ",Klebsiella,880000000,48
+"no predator, CI ",Klebsiella,750000000,48
+"no predator, CI ",Pseudomonas,116666666.7,48
+"no predator, CI ",Pseudomonas,180000000,48
+"no predator, CI ",Staphylococcus,1737500,48
+"no predator, CI ",Staphylococcus,3012500,48
+"no predator, CI ",Klebsiella,571000000,72
+"no predator, CI ",Klebsiella,525833333.3,72
+"no predator, CI ",Pseudomonas,86666666.67,72
+"no predator, CI ",Pseudomonas,130000000,72
+"no predator, CI ",Staphylococcus,1037500,72
+"no predator, CI ",Staphylococcus,775000,72
+"no predator, CII",Klebsiella,4529450,0
+"no predator, CII",Klebsiella,5186466.667,0
+"no predator, CII",Pseudomonas,3500000,0
+"no predator, CII",Pseudomonas,2166666.667,0
+"no predator, CII",Staphylococcus,46666666.67,0
+"no predator, CII",Staphylococcus,70000000,0
+"no predator, CII",Klebsiella,2500269.667,24
+"no predator, CII",Klebsiella,833451.25,24
+"no predator, CII",Pseudomonas,22083333.33,24
+"no predator, CII",Pseudomonas,36000000,24
+"no predator, CII",Staphylococcus,24833333.33,24
+"no predator, CII",Staphylococcus,26833333.33,24
+"no predator, CII",Klebsiella,3333609.167,48
+"no predator, CII",Klebsiella,6666986.667,48
+"no predator, CII",Pseudomonas,86666666.67,48
+"no predator, CII",Pseudomonas,81666666.67,48
+"no predator, CII",Staphylococcus,2625000,48
+"no predator, CII",Staphylococcus,13625000,48
+"no predator, CII",Klebsiella,5000475,72
+"no predator, CII",Klebsiella,4000122,72
+"no predator, CII",Pseudomonas,138750000,72
+"no predator, CII",Pseudomonas,122500000,72
+"no predator, CII",Staphylococcus,5400000,72
+"no predator, CII",Staphylococcus,8785714.286,72
+"Protist, I",Klebsiella,11000000,0
+"Protist, I",Klebsiella,3312500,0
+"Protist, I",Klebsiella,14666666.67,0
+"Protist, I",Protist,1300,0
+"Protist, I",Protist,850,0
+"Protist, I",Protist,1250,0
+"Protist, I",Klebsiella,27166666.67,24
+"Protist, I",Klebsiella,9500000,24
+"Protist, I",Klebsiella,19500000,24
+"Protist, I",Protist,950,24
+"Protist, I",Protist,950,24
+"Protist, I",Protist,5200,48
+"Protist, I",Protist,1500,48
+"Protist, I",Protist,1700,48
+"Protist, I",Protist,7600,72
+"Protist, I",Protist,2250,72
+"Protist, I",Protist,1800,72
+"Protist, I",Klebsiella,1750000,48
+"Protist, I",Klebsiella,6166666.667,48
+"Protist, I",Klebsiella,1516666.667,48
+"Protist, I",Klebsiella,1416666.667,72
+"Protist, I",Klebsiella,2166666.667,72
+"Protist, I",Klebsiella,616666.6667,72
+"BALO, I",Klebsiella,2150000,0
+"BALO, I",Klebsiella,12833333.33,0
+"BALO, I",Klebsiella,13500000,0
+"BALO, I",BALO,1.29E+06,0
+"BALO, I",BALO,9.57E+05,0
+"BALO, I",BALO,1.51E+06,0
+"BALO, I",Klebsiella,177500,24
+"BALO, I",Klebsiella,1583333.333,24
+"BALO, I",Klebsiella,3450000,24
+"BALO, I",BALO,9.55E+05,24
+"BALO, I",BALO,9.89E+05,24
+"BALO, I",BALO,7.09E+05,24
+"BALO, I",BALO,1.58E+05,48
+"BALO, I",BALO,5.13E+05,48
+"BALO, I",BALO,3.83E+05,48
+"BALO, I",BALO,4.40E+04,72
+"BALO, I",BALO,0.00E+00,72
+"BALO, I",BALO,1.28E+05,72
+"BALO, I",Klebsiella,1000000,48
+"BALO, I",Klebsiella,2316666.667,48
+"BALO, I",Klebsiella,5816666.667,48
+"BALO, I",Klebsiella,3658333.333,72
+"BALO, I",Klebsiella,3825000,72
+"BALO, I",Klebsiella,8000000,72
+"Phage, I",Klebsiella,11500000,0
+"Phage, I",Klebsiella,3525000,0
+"Phage, I",Klebsiella,3000000,0
+"Phage, I",Phage,8.03E+05,0
+"Phage, I",Phage,5.60E+05,0
+"Phage, I",Phage,4.33E+04,0
+"Phage, I",Klebsiella,14000000,24
+"Phage, I",Klebsiella,9000000,24
+"Phage, I",Klebsiella,82500000,24
+"Phage, I",Phage,7.60E+05,24
+"Phage, I",Phage,1.17E+06,24
+"Phage, I",Phage,3.87E+04,24
+"Phage, I",Phage,4.03E+05,48
+"Phage, I",Phage,3.60E+05,48
+"Phage, I",Phage,1.28E+05,48
+"Phage, I",Phage,2.53E+05,72
+"Phage, I",Phage,1.87E+05,72
+"Phage, I",Phage,7.57E+05,72
+"Phage, I",Klebsiella,41000000,48
+"Phage, I",Klebsiella,22833333.33,48
+"Phage, I",Klebsiella,141250000,48
+"Phage, I",Klebsiella,33750000,72
+"Phage, I",Klebsiella,19333333.33,72
+"Phage, I",Klebsiella,168750000,72
+"Protist, II",Klebsiella,2.23E+06,0
+"Protist, II",Klebsiella,2.27E+06,0
+"Protist, II",Klebsiella,1.97E+06,0
+"Protist, II",Pseudomonas,933333.3333,0
+"Protist, II",Pseudomonas,1533333.333,0
+"Protist, II",Pseudomonas,1533333.333,0
+"Protist, II",Staphylococcus,10666666.67,0
+"Protist, II",Staphylococcus,11000000,0
+"Protist, II",Staphylococcus,9000000,0
+"Protist, II",Klebsiella,1.10E+05,24
+"Protist, II",Klebsiella,2.30E+06,24
+"Protist, II",Klebsiella,5.40E+05,24
+"Protist, II",Pseudomonas,3433333.333,24
+"Protist, II",Pseudomonas,1533333.333,24
+"Protist, II",Pseudomonas,8920000,24
+"Protist, II",Staphylococcus,5000000,24
+"Protist, II",Staphylococcus,7666666.667,24
+"Protist, II",Staphylococcus,4666666.667,24
+"Protist, II",Klebsiella,1.00E+04,48
+"Protist, II",Klebsiella,2.33E+05,48
+"Protist, II",Klebsiella,7.00E+04,48
+"Protist, II",Pseudomonas,9500,48
+"Protist, II",Pseudomonas,480000,48
+"Protist, II",Pseudomonas,427500,48
+"Protist, II",Staphylococcus,57500,48
+"Protist, II",Staphylococcus,2100000,48
+"Protist, II",Staphylococcus,232857.1429,48
+"Protist, II",Klebsiella,18000,72
+"Protist, II",Klebsiella,13750,72
+"Protist, II",Klebsiella,14000,72
+"Protist, II",Pseudomonas,42000,72
+"Protist, II",Pseudomonas,10500,72
+"Protist, II",Pseudomonas,50000,72
+"Protist, II",Staphylococcus,133333.3333,72
+"Protist, II",Staphylococcus,80000,72
+"Protist, II",Staphylococcus,56666.66667,72
+"Protist, II",Protist,700,0
+"Protist, II",Protist,650,0
+"Protist, II",Protist,850,0
+"Protist, II",Protist,5900,24
+"Protist, II",Protist,5850,24
+"Protist, II",Protist,35300,48
+"Protist, II",Protist,19600,48
+"Protist, II",Protist,64500,48
+"Protist, II",Protist,18550,72
+"Protist, II",Protist,12500,72
+"Protist, II",Protist,21700,72
+"BALO, II",Klebsiella,6333333.333,0
+"BALO, II",Klebsiella,16500000,0
+"BALO, II",Klebsiella,12000000,0
+"BALO, II",Pseudomonas,2333333.333,0
+"BALO, II",Pseudomonas,3333333.333,0
+"BALO, II",Pseudomonas,4166666.667,0
+"BALO, II",Staphylococcus,30000000,0
+"BALO, II",Staphylococcus,38333333.33,0
+"BALO, II",Staphylococcus,53333333.33,0
+"BALO, II",Klebsiella,1500000,24
+"BALO, II",Klebsiella,5000000,24
+"BALO, II",Klebsiella,1500000,24
+"BALO, II",Pseudomonas,51666666.67,24
+"BALO, II",Pseudomonas,28583333.33,24
+"BALO, II",Pseudomonas,23666666.67,24
+"BALO, II",Staphylococcus,41666666.67,24
+"BALO, II",Staphylococcus,32625000,24
+"BALO, II",Staphylococcus,15333333.33,24
+"BALO, II",BALO,2.97E+03,0
+"BALO, II",BALO,2.59E+04,0
+"BALO, II",BALO,5.78E+03,0
+"BALO, II",BALO,2.00E+04,24
+"BALO, II",BALO,4.17E+04,24
+"BALO, II",BALO,1.07E+05,24
+"BALO, II",BALO,1.36E+06,48
+"BALO, II",BALO,2.95E+05,48
+"BALO, II",BALO,5.00E+05,48
+"BALO, II",BALO,6.13E+07,72
+"BALO, II",BALO,5.24E+06,72
+"BALO, II",BALO,3.24E+06,72
+"BALO, II",Klebsiella,0,48
+"BALO, II",Klebsiella,50000,48
+"BALO, II",Klebsiella,316666.6667,48
+"BALO, II",Pseudomonas,13166666.67,48
+"BALO, II",Pseudomonas,15166666.67,48
+"BALO, II",Pseudomonas,4000000,48
+"BALO, II",Staphylococcus,18333333.33,48
+"BALO, II",Staphylococcus,21666666.67,48
+"BALO, II",Staphylococcus,14900000,48
+"BALO, II",Klebsiella,0,72
+"BALO, II",Klebsiella,0,72
+"BALO, II",Klebsiella,0,72
+"BALO, II",Pseudomonas,8333333.333,72
+"BALO, II",Pseudomonas,2000000,72
+"BALO, II",Pseudomonas,6125000,72
+"BALO, II",Staphylococcus,17833333.33,72
+"BALO, II",Staphylococcus,12500000,72
+"BALO, II",Staphylococcus,6500000,72
+"Phage, II",Klebsiella,2466666.667,0
+"Phage, II",Klebsiella,2066666.667,0
+"Phage, II",Klebsiella,833333.3333,0
+"Phage, II",Pseudomonas,1600000,0
+"Phage, II",Pseudomonas,933333.3333,0
+"Phage, II",Pseudomonas,733333.3333,0
+"Phage, II",Staphylococcus,13000000,0
+"Phage, II",Staphylococcus,6333333.333,0
+"Phage, II",Staphylococcus,6666666.667,0
+"Phage, II",Klebsiella,200000,24
+"Phage, II",Klebsiella,10000,24
+"Phage, II",Klebsiella,150000,24
+"Phage, II",Pseudomonas,7200000,24
+"Phage, II",Pseudomonas,5666666.667,24
+"Phage, II",Pseudomonas,16000000,24
+"Phage, II",Staphylococcus,7000000,24
+"Phage, II",Staphylococcus,7666666.667,24
+"Phage, II",Staphylococcus,6333333.333,24
+"Phage, II",Klebsiella,0,48
+"Phage, II",Klebsiella,0,48
+"Phage, II",Klebsiella,0,48
+"Phage, II",Pseudomonas,12000000,48
+"Phage, II",Pseudomonas,11666666.67,48
+"Phage, II",Pseudomonas,20000000,48
+"Phage, II",Staphylococcus,4000000,48
+"Phage, II",Staphylococcus,4420000,48
+"Phage, II",Staphylococcus,1950000,48
+"Phage, II",Klebsiella,0,72
+"Phage, II",Klebsiella,0,72
+"Phage, II",Klebsiella,0,72
+"Phage, II",Pseudomonas,12500000,72
+"Phage, II",Pseudomonas,25500000,72
+"Phage, II",Pseudomonas,17500000,72
+"Phage, II",Staphylococcus,4000000,72
+"Phage, II",Staphylococcus,6000000,72
+"Phage, II",Staphylococcus,1240000,72
+"Phage, II",Phage,2.33E+05,0
+"Phage, II",Phage,6.83E+06,0
+"Phage, II",Phage,4.67E+05,0
+"Phage, II",Phage,8.93E+06,24
+"Phage, II",Phage,6.30E+06,24
+"Phage, II",Phage,7.53E+06,24
+"Phage, II",Phage,2.42E+07,48
+"Phage, II",Phage,2.80E+07,48
+"Phage, II",Phage,3.17E+07,48
+"Phage, II",Phage,1.17E+07,72
+"Phage, II",Phage,1.93E+07,72
+"Phage, II",Phage,1.60E+07,72
+"Protist + BALO, III",Klebsiella,6000000,0
+"Protist + BALO, III",Klebsiella,12666666.67,0
+"Protist + BALO, III",Klebsiella,5666666.667,0
+"Protist + BALO, III",Pseudomonas,1630000,0
+"Protist + BALO, III",Pseudomonas,791666.6667,0
+"Protist + BALO, III",Pseudomonas,1491666.667,0
+"Protist + BALO, III",Staphylococcus,36666666.67,0
+"Protist + BALO, III",Staphylococcus,23666666.67,0
+"Protist + BALO, III",Staphylococcus,27250000,0
+"Protist + BALO, III",Protist,400,0
+"Protist + BALO, III",Protist,300,0
+"Protist + BALO, III",Protist,850,0
+"Protist + BALO, III",Protist,2400,24
+"Protist + BALO, III",Protist,3300,24
+"Protist + BALO, III",Protist,4050,24
+"Protist + BALO, III",Protist,23200,48
+"Protist + BALO, III",Protist,23200,48
+"Protist + BALO, III",Protist,9200,48
+"Protist + BALO, III",Protist,10100,72
+"Protist + BALO, III",Protist,38200,72
+"Protist + BALO, III",Protist,9500,72
+"Protist + BALO, III",BALO,7.60E+03,0
+"Protist + BALO, III",BALO,3.72E+03,0
+"Protist + BALO, III",BALO,8.67E+02,0
+"Protist + BALO, III",BALO,6.27E+04,24
+"Protist + BALO, III",BALO,4.40E+04,24
+"Protist + BALO, III",BALO,1.97E+04,24
+"Protist + BALO, III",BALO,2.10E+03,48
+"Protist + BALO, III",BALO,9.33E+02,48
+"Protist + BALO, III",BALO,7.70E+03,48
+"Protist + BALO, III",BALO,7.70E+03,72
+"Protist + BALO, III",BALO,2.33E+02,72
+"Protist + BALO, III",BALO,2.53E+04,72
+"Protist + BALO, III",Klebsiella,16666666.67,24
+"Protist + BALO, III",Klebsiella,12500000,24
+"Protist + BALO, III",Klebsiella,7000000,24
+"Protist + BALO, III",Pseudomonas,22666666.67,24
+"Protist + BALO, III",Pseudomonas,5333333.333,24
+"Protist + BALO, III",Pseudomonas,26333333.33,24
+"Protist + BALO, III",Staphylococcus,16666666.67,24
+"Protist + BALO, III",Staphylococcus,20166666.67,24
+"Protist + BALO, III",Staphylococcus,20000000,24
+"Protist + BALO, III",Klebsiella,275000,48
+"Protist + BALO, III",Klebsiella,550000,48
+"Protist + BALO, III",Klebsiella,1337500,48
+"Protist + BALO, III",Pseudomonas,550000,48
+"Protist + BALO, III",Pseudomonas,112857.1429,48
+"Protist + BALO, III",Pseudomonas,1016666.667,48
+"Protist + BALO, III",Staphylococcus,1625000,48
+"Protist + BALO, III",Staphylococcus,650000,48
+"Protist + BALO, III",Staphylococcus,1700000,48
+"Protist + BALO, III",Klebsiella,115000,72
+"Protist + BALO, III",Klebsiella,206250,72
+"Protist + BALO, III",Klebsiella,143750,72
+"Protist + BALO, III",Pseudomonas,265000,72
+"Protist + BALO, III",Pseudomonas,92500,72
+"Protist + BALO, III",Pseudomonas,146250,72
+"Protist + BALO, III",Staphylococcus,266666.6667,72
+"Protist + BALO, III",Staphylococcus,350000,72
+"Protist + BALO, III",Staphylococcus,433333.3333,72
+"Protist + Phage, III",Klebsiella,80000000,0
+"Protist + Phage, III",Klebsiella,65000000,0
+"Protist + Phage, III",Klebsiella,77500000,0
+"Protist + Phage, III",Pseudomonas,10583333.33,0
+"Protist + Phage, III",Pseudomonas,9500000,0
+"Protist + Phage, III",Pseudomonas,6125000,0
+"Protist + Phage, III",Staphylococcus,68333333.33,0
+"Protist + Phage, III",Staphylococcus,65000000,0
+"Protist + Phage, III",Staphylococcus,36666666.67,0
+"Protist + Phage, III",Klebsiella,510000,24
+"Protist + Phage, III",Klebsiella,250000,24
+"Protist + Phage, III",Klebsiella,275000,24
+"Protist + Phage, III",Pseudomonas,6250000,24
+"Protist + Phage, III",Pseudomonas,6000000,24
+"Protist + Phage, III",Pseudomonas,7250000,24
+"Protist + Phage, III",Staphylococcus,8000000,24
+"Protist + Phage, III",Staphylococcus,10666666.67,24
+"Protist + Phage, III",Staphylococcus,24166666.67,24
+"Protist + Phage, III",Klebsiella,36666.66667,48
+"Protist + Phage, III",Klebsiella,13750,48
+"Protist + Phage, III",Klebsiella,5600,48
+"Protist + Phage, III",Pseudomonas,198333.3333,48
+"Protist + Phage, III",Pseudomonas,128333.3333,48
+"Protist + Phage, III",Pseudomonas,91666.66667,48
+"Protist + Phage, III",Staphylococcus,1050000,48
+"Protist + Phage, III",Staphylococcus,666666.6667,48
+"Protist + Phage, III",Staphylococcus,566666.6667,48
+"Protist + Phage, III",Protist,1150,0
+"Protist + Phage, III",Protist,900,0
+"Protist + Phage, III",Protist,900,0
+"Protist + Phage, III",Protist,9100,24
+"Protist + Phage, III",Protist,6900,24
+"Protist + Phage, III",Protist,4650,24
+"Protist + Phage, III",Protist,15000,48
+"Protist + Phage, III",Protist,13950,48
+"Protist + Phage, III",Protist,14800,48
+"Protist + Phage, III",Protist,24600,72
+"Protist + Phage, III",Protist,22500,72
+"Protist + Phage, III",Protist,19500,72
+"Protist + Phage, III",Phage,2.34E+05,0
+"Protist + Phage, III",Phage,1.30E+05,0
+"Protist + Phage, III",Phage,2.30E+05,0
+"Protist + Phage, III",Phage,5.50E+05,24
+"Protist + Phage, III",Phage,2.67E+06,24
+"Protist + Phage, III",Phage,4.53E+04,24
+"Protist + Phage, III",Phage,1.73E+05,48
+"Protist + Phage, III",Phage,1.00E+05,48
+"Protist + Phage, III",Phage,7.17E+05,48
+"Protist + Phage, III",Phage,4.67E+05,72
+"Protist + Phage, III",Phage,3.17E+05,72
+"Protist + Phage, III",Phage,3.73E+05,72
+"Protist + Phage, III",Klebsiella,117000,72
+"Protist + Phage, III",Klebsiella,171666.6667,72
+"Protist + Phage, III",Klebsiella,40000,72
+"Protist + Phage, III",Pseudomonas,675000,72
+"Protist + Phage, III",Pseudomonas,1700000,72
+"Protist + Phage, III",Pseudomonas,883333.3333,72
+"Protist + Phage, III",Staphylococcus,816666.6667,72
+"Protist + Phage, III",Staphylococcus,733333.3333,72
+"Protist + Phage, III",Staphylococcus,550000,72
+"BALO + Phage, III",Klebsiella,14500000,0
+"BALO + Phage, III",Klebsiella,11500000,0
+"BALO + Phage, III",Klebsiella,8333333.333,0
+"BALO + Phage, III",Pseudomonas,2666666.667,0
+"BALO + Phage, III",Pseudomonas,2000000,0
+"BALO + Phage, III",Pseudomonas,2030000,0
+"BALO + Phage, III",Staphylococcus,21000000,0
+"BALO + Phage, III",Staphylococcus,16666666.67,0
+"BALO + Phage, III",Staphylococcus,8333333.333,0
+"BALO + Phage, III",Klebsiella,9625000,24
+"BALO + Phage, III",Klebsiella,1000000,24
+"BALO + Phage, III",Klebsiella,500000,24
+"BALO + Phage, III",Pseudomonas,40000000,24
+"BALO + Phage, III",Pseudomonas,23333333.33,24
+"BALO + Phage, III",Pseudomonas,38333333.33,24
+"BALO + Phage, III",Staphylococcus,25000000,24
+"BALO + Phage, III",Staphylococcus,20000000,24
+"BALO + Phage, III",Staphylococcus,28333333.33,24
+"BALO + Phage, III",Klebsiella,0,48
+"BALO + Phage, III",Klebsiella,25000,48
+"BALO + Phage, III",Klebsiella,0,48
+"BALO + Phage, III",Pseudomonas,123333333.3,48
+"BALO + Phage, III",Pseudomonas,2062500,48
+"BALO + Phage, III",Pseudomonas,125000000,48
+"BALO + Phage, III",Staphylococcus,26666666.67,48
+"BALO + Phage, III",Staphylococcus,28800000,48
+"BALO + Phage, III",Staphylococcus,23333333.33,48
+"BALO + Phage, III",Klebsiella,0,72
+"BALO + Phage, III",Klebsiella,0,72
+"BALO + Phage, III",Klebsiella,0,72
+"BALO + Phage, III",Pseudomonas,127500000,72
+"BALO + Phage, III",Pseudomonas,8166666.667,72
+"BALO + Phage, III",Pseudomonas,7333333.333,72
+"BALO + Phage, III",Staphylococcus,15000000,72
+"BALO + Phage, III",Staphylococcus,22400000,72
+"BALO + Phage, III",Staphylococcus,13166666.67,72
+"BALO + Phage, III",BALO,8.93E+03,0
+"BALO + Phage, III",BALO,1.50E+02,0
+"BALO + Phage, III",BALO,3.33E+02,0
+"BALO + Phage, III",BALO,3.03E+03,24
+"BALO + Phage, III",BALO,1.43E+03,24
+"BALO + Phage, III",BALO,7.33E+02,24
+"BALO + Phage, III",BALO,5.43E+04,48
+"BALO + Phage, III",BALO,7.48E+04,48
+"BALO + Phage, III",BALO,2.17E+04,48
+"BALO + Phage, III",BALO,5.20E+05,72
+"BALO + Phage, III",BALO,1.92E+06,72
+"BALO + Phage, III",BALO,8.33E+05,72
+"BALO + Phage, III",Phage,1.00E+05,0
+"BALO + Phage, III",Phage,5.33E+04,0
+"BALO + Phage, III",Phage,3.67E+05,0
+"BALO + Phage, III",Phage,2.13E+06,24
+"BALO + Phage, III",Phage,3.00E+05,24
+"BALO + Phage, III",Phage,7.17E+06,24
+"BALO + Phage, III",Phage,3.43E+06,48
+"BALO + Phage, III",Phage,3.53E+06,48
+"BALO + Phage, III",Phage,3.88E+06,48
+"BALO + Phage, III",Phage,5.27E+06,72
+"BALO + Phage, III",Phage,9.13E+06,72
+"BALO + Phage, III",Phage,4.77E+06,72
+"Protist + BALO + Phage, IV",Protist,825,0
+"Protist + BALO + Phage, IV",Protist,1550,0
+"Protist + BALO + Phage, IV",Protist,1000,0
+"Protist + BALO + Phage, IV",Protist,625,24
+"Protist + BALO + Phage, IV",Protist,8750,24
+"Protist + BALO + Phage, IV",Protist,2525,24
+"Protist + BALO + Phage, IV",Protist,14150,48
+"Protist + BALO + Phage, IV",Protist,17050,48
+"Protist + BALO + Phage, IV",Protist,14600,48
+"Protist + BALO + Phage, IV",Protist,27500,72
+"Protist + BALO + Phage, IV",Protist,25800,72
+"Protist + BALO + Phage, IV",Protist,23900,72
+"Protist + BALO + Phage, IV",BALO,4.29E+04,0
+"Protist + BALO + Phage, IV",BALO,5.74E+04,0
+"Protist + BALO + Phage, IV",BALO,3.98E+04,0
+"Protist + BALO + Phage, IV",BALO,1.80E+03,24
+"Protist + BALO + Phage, IV",BALO,1.46E+03,24
+"Protist + BALO + Phage, IV",BALO,1.45E+03,24
+"Protist + BALO + Phage, IV",BALO,1.45E+03,48
+"Protist + BALO + Phage, IV",BALO,1.23E+03,48
+"Protist + BALO + Phage, IV",BALO,1.34E+03,48
+"Protist + BALO + Phage, IV",BALO,1.33E+03,72
+"Protist + BALO + Phage, IV",BALO,8.67E+02,72
+"Protist + BALO + Phage, IV",BALO,3.88E+03,72
+"Protist + BALO + Phage, IV",Phage,6.13E+05,0
+"Protist + BALO + Phage, IV",Phage,1.67E+05,0
+"Protist + BALO + Phage, IV",Phage,5.07E+05,0
+"Protist + BALO + Phage, IV",Phage,1.88E+06,24
+"Protist + BALO + Phage, IV",Phage,3.03E+07,24
+"Protist + BALO + Phage, IV",Phage,6.10E+06,24
+"Protist + BALO + Phage, IV",Phage,2.79E+07,48
+"Protist + BALO + Phage, IV",Phage,2.70E+06,48
+"Protist + BALO + Phage, IV",Phage,3.10E+07,48
+"Protist + BALO + Phage, IV",Phage,1.75E+07,72
+"Protist + BALO + Phage, IV",Phage,2.01E+07,72
+"Protist + BALO + Phage, IV",Phage,2.25E+07,72
+"Protist + BALO + Phage, IV",Klebsiella,5701166.667,0
+"Protist + BALO + Phage, IV",Klebsiella,4855000,0
+"Protist + BALO + Phage, IV",Klebsiella,2849050,0
+"Protist + BALO + Phage, IV",Pseudomonas,7166666.667,0
+"Protist + BALO + Phage, IV",Pseudomonas,5500000,0
+"Protist + BALO + Phage, IV",Pseudomonas,3500000,0
+"Protist + BALO + Phage, IV",Staphylococcus,35000000,0
+"Protist + BALO + Phage, IV",Staphylococcus,78333333.33,0
+"Protist + BALO + Phage, IV",Staphylococcus,38333333.33,0
+"Protist + BALO + Phage, IV",Klebsiella,833554.3333,24
+"Protist + BALO + Phage, IV",Klebsiella,50700,24
+"Protist + BALO + Phage, IV",Klebsiella,3333505.667,24
+"Protist + BALO + Phage, IV",Pseudomonas,26750000,24
+"Protist + BALO + Phage, IV",Pseudomonas,1483333.333,24
+"Protist + BALO + Phage, IV",Pseudomonas,28083333.33,24
+"Protist + BALO + Phage, IV",Staphylococcus,255000000,24
+"Protist + BALO + Phage, IV",Staphylococcus,27500000,24
+"Protist + BALO + Phage, IV",Staphylococcus,273333333.3,24
+"Protist + BALO + Phage, IV",Klebsiella,20023.6,48
+"Protist + BALO + Phage, IV",Klebsiella,14341.85714,48
+"Protist + BALO + Phage, IV",Klebsiella,25004.75,48
+"Protist + BALO + Phage, IV",Pseudomonas,257142.8571,48
+"Protist + BALO + Phage, IV",Pseudomonas,295714.2857,48
+"Protist + BALO + Phage, IV",Pseudomonas,197142.8571,48
+"Protist + BALO + Phage, IV",Staphylococcus,4833333.333,48
+"Protist + BALO + Phage, IV",Staphylococcus,1910000,48
+"Protist + BALO + Phage, IV",Staphylococcus,2025000,48
+"Protist + BALO + Phage, IV",Klebsiella,1562.5,72
+"Protist + BALO + Phage, IV",Klebsiella,8485.75,72
+"Protist + BALO + Phage, IV",Klebsiella,7750,72
+"Protist + BALO + Phage, IV",Pseudomonas,106250,72
+"Protist + BALO + Phage, IV",Pseudomonas,310833.3333,72
+"Protist + BALO + Phage, IV",Pseudomonas,138750,72
+"Protist + BALO + Phage, IV",Staphylococcus,550000,72
+"Protist + BALO + Phage, IV",Staphylococcus,1266666.667,72
+"Protist + BALO + Phage, IV",Staphylococcus,816666.6667,72

@@ -152,8 +152,44 @@ alseth_data <- select(alseth_data, Focal_strain, Competitor_community,
 #Add study name
 alseth_data$Study <- "Alseth_etal"
 
-#Merge studies together
-all_data <- full_join(mum_data, alseth_data)
+##Clean up Johnke data ----
+
+#Read in file
+johnke_data <- read.csv("./Raw_data/Johnke et al/Density_data.csv",
+                        stringsAsFactors = F)
+
+#Drop treatments we don't want
+johnke_data <- johnke_data[johnke_data$info %in% 
+                             c("no predator, CI ", "no predator, CII",
+                               "Phage, I", "Phage, II"), ]
+
+#Rename & relevel variables
+johnke_data$PhagePresence <- 
+  sapply(johnke_data$info, FUN = function(x) {strsplit(x, split = ", ")[[1]][1]})
+johnke_data$PhagePresence <- recode(johnke_data$PhagePresence,
+                                    Phage = 1, `no predator` = 0)
+
+johnke_data$Competitor_community <- 
+  sapply(johnke_data$info, FUN = function(x) {strsplit(x, split = ", ")[[1]][2]})
+johnke_data$Competitor_community <- recode(johnke_data$Competitor_community,
+                                           `CI ` = "None", I = "None",
+                                           CII = "P+S", II = "P+S")
+
+johnke_data$Time_day <- johnke_data$time..h/24
+johnke_data$Focal_strain <- "Klebsiella"
+johnke_data$Pop <- recode(johnke_data$prey.predator,
+                          Phage = "Kleb_phage")
+johnke_data$Density <- johnke_data$cell.count.ml
+johnke_data$Rep_pop <- as.character(1:nrow(johnke_data))
+johnke_data$Study <- "Johnke_etal"
+
+#Drop unneeded columns
+johnke_data <- johnke_data[ , c("Focal_strain", "Competitor_community",
+                                "PhagePresence", "Time_day", "Pop", "Density",
+                                "Rep_pop", "Study")]
+
+##Merge studies together ----
+all_data <- full_join(full_join(mum_data, alseth_data), johnke_data)
 
 #Output clean data
 write.csv(all_data,
