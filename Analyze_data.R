@@ -1,5 +1,6 @@
 ##Load libraries & data ----
 library(ggplot2)
+library(dplyr)
 
 all_data <- read.csv("./Clean_data/cleaned_merged_data.csv",
                      stringsAsFactors = F)
@@ -30,6 +31,10 @@ all_data$Bact_community <-
                     "Pa", "Pa+Sa", "Pa+Sm", "Pa+Sa+Sm",
                     "PA", "PA+AB", "PA+BC", "PA+SA", "PA+AB+BC+SA", 
                     "PA+surfacemutant"))
+all_data$Focal_strain <- 
+  factor(all_data$Focal_strain,
+         levels = c("Klebsiella", "PAO1", "lasR", "PA14"))
+
 
 #Get summarized values
 all_data <- group_by(all_data, Study, Focal_strain, Bact_community,
@@ -49,8 +54,8 @@ all_data_popsum <- summarize(all_data_repsum,
                              dens_pop_sd = sd(dens_rep_avg, na.rm = TRUE),
                              dens_pop_n = sum(sapply(dens_rep_avg, is.numeric)))
 
-
 #Plots ----
+#Mumford
 temp_repsum <- all_data_repsum[all_data_repsum$Study == "Mumford_Friman", ]
 temp_popsum <- all_data_popsum[all_data_popsum$Study == "Mumford_Friman", ]
 ggplot(data = temp_repsum, 
@@ -68,6 +73,7 @@ ggplot(data = temp_repsum,
   scale_y_continuous(trans = "log10") +
   scale_color_manual(values = my_cols)
 
+#Alseth
 temp_repsum <- all_data_repsum[all_data_repsum$Study == "Alseth_etal", ]
 temp_popsum <- all_data_popsum[all_data_popsum$Study == "Alseth_etal", ]
 ggplot(data = temp_repsum,
@@ -80,6 +86,7 @@ ggplot(data = temp_repsum,
   scale_y_continuous(trans = "log10") +
   scale_color_manual(values = my_cols)
 
+#Johnke
 temp_repsum <- all_data_repsum[all_data_repsum$Study == "Johnke_etal", ]
 temp_popsum <- all_data_popsum[all_data_popsum$Study == "Johnke_etal", ]
 ggplot(data = temp_repsum,
@@ -91,3 +98,52 @@ ggplot(data = temp_repsum,
   facet_grid(Phage_presence~Bact_community) +
   scale_y_continuous(trans = "log10") +
   scale_color_manual(values = my_cols)
+
+##Stats ----
+
+model_mum_bact <- lm(log10(dens_rep_avg+1) ~ Bact_community*Focal_strain*Phage_presence,
+                 all_data_repsum[all_data_repsum$Time_day > 0 &
+                                   all_data_repsum$Study == "Mumford_Friman" &
+                                   all_data_repsum$Pop == "P_aeruginosa", ])
+summary(model_mum_bact)
+
+model_mum_phg <- lm(log10(dens_rep_avg) ~ Bact_community*Time_day*Focal_strain,
+                all_data_repsum[all_data_repsum$Time_day > 0 &
+                                all_data_repsum$Study == "Mumford_Friman" &
+                                all_data_repsum$Pop == "PT7", ])
+summary(model_mum_phg)
+##Only sig effect is that phage declines over time
+
+model_alseth_bact <- lm(log10(dens_rep_avg) ~ Bact_community*Time_day,
+                    all_data_repsum[all_data_repsum$Time_day > 0 &
+                                      all_data_repsum$Study == "Alseth_etal" &
+                                      all_data_repsum$Pop == "PA14", ])
+summary(model_alseth_bact)
+##PA dens is suppressed by           
+
+
+model_alseth_phg <- lm(log10(dens_rep_avg) ~ Bact_community*Time_day,
+                       all_data_repsum[all_data_repsum$Time_day > 0 &
+                                         all_data_repsum$Study == "Alseth_etal" &
+                                         all_data_repsum$Pop == "DMS3vir", ])
+summary(model_alseth_phg)
+##Phages decline faster over time with BC
+
+
+model_jon_bact <- lm(log10(dens_rep_avg+1) ~ Bact_community*Phage_presence*Time_day,
+             all_data_repsum[all_data_repsum$Time_day > 0 &
+                              all_data_repsum$Study == "Johnke_etal" &
+                              all_data_repsum$Pop == "Klebsiella", ])
+summary(model_jon_bact)
+
+model_jon_phg <- lm(log10(dens_rep_avg) ~ Bact_community*Time_day,
+                 all_data_repsum[all_data_repsum$Time_day > 0 &
+                                   all_data_repsum$Study == "Johnke_etal" &
+                                   all_data_repsum$Pop == "Kleb_phage", ])
+summary(model_jon_phg)
+             
+             
+             
+             
+             
+             
