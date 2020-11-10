@@ -186,7 +186,7 @@ johnke_data$Focal_strain <- "Klebsiella"
 johnke_data$Pop <- recode(johnke_data$prey.predator,
                           Phage = "Kleb_phage")
 johnke_data$Density <- johnke_data$cell.count.ml
-johnke_data$Rep_pop <- johnke_data$reactor
+johnke_data$Rep_pop <- as.character(johnke_data$reactor)
 johnke_data$Study <- "Johnke_etal"
 
 #Drop unneeded columns
