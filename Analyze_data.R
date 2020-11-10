@@ -76,7 +76,7 @@ ggplot(data = temp_repsum,
   geom_hline(yintercept = 1, lty = 2) +
   facet_grid(Phage_presence ~ Focal_strain + Bact_community) +
   scale_y_continuous(trans = "log10") +
-  scale_color_manual(values = my_cols) +
+  scale_color_manual(values = my_cols[c(8, 5)]) +
   labs(x = "Time (days)", y = "Density + 1", color = "Population", 
        title = "Focal Host Genotype", subtitle = "Community Treatment") +
   theme_bw() +
@@ -103,7 +103,7 @@ ggplot(data = temp_repsum,
   geom_hline(yintercept = 1, lty = 2) +
   facet_grid(Phage_presence~Bact_community) +
   scale_y_continuous(trans = "log10") +
-  scale_color_manual(values = my_cols) +
+  scale_color_manual(values = my_cols[c(8, 1:3, 5)]) +
   labs(x = "Time (days)", y = "Density + 1",
        color = "Population", subtitle = "Community Treatment") +
   theme_bw() +
@@ -129,7 +129,7 @@ ggplot(data = temp_repsum,
   geom_hline(yintercept = 1, lty = 2) +
   facet_grid(Phage_presence~Bact_community) +
   scale_y_continuous(trans = "log10") +
-  scale_color_manual(values = my_cols) +
+  scale_color_manual(values = my_cols[c(8, 1, 3, 5)]) +
   labs(x = "Time (days)", y = "Density + 1",
        color = "Population", subtitle = "Community Treatment") +
   theme_bw() +
