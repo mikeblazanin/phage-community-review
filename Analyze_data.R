@@ -41,7 +41,7 @@ all_data$Focal_strain <-
 all_data <- group_by(all_data, Study, Focal_strain, Bact_community,
                      Phage_presence, Time_day, Rep_pop, Pop)
 all_data_repsum <- summarize(all_data,
-                          dens_rep_avg = mean(Density, na.rm = TRUE),
+                          dens_rep_avg = 10**mean(log10(Density+1), na.rm = TRUE),
                           dens_rep_sd = sd(Density, na.rm = TRUE),
                           dens_rep_n = sum(sapply(Density, is.numeric)))
 
@@ -51,7 +51,7 @@ all_data_repsum <- group_by(all_data_repsum,
                             Study, Focal_strain, Bact_community,
                             Phage_presence, Time_day, Pop)
 all_data_popsum <- summarize(all_data_repsum,
-                             dens_pop_avg = mean(dens_rep_avg),
+                             dens_pop_avg = 10**mean(log10(dens_rep_avg+1)),
                              dens_pop_sd = sd(dens_rep_avg, na.rm = TRUE),
                              dens_pop_n = sum(sapply(dens_rep_avg, is.numeric)))
 
@@ -144,33 +144,138 @@ dev.off()
 
 ##Stats ----
 
-model_mum_bact <- lm(log10(dens_rep_avg+1) ~ Bact_community*Focal_strain*Phage_presence,
-                 all_data_repsum[all_data_repsum$Time_day > 0 &
-                                   all_data_repsum$Study == "Mumford_Friman" &
-                                   all_data_repsum$Pop == "P_aeruginosa", ])
+#Mumford ----
+mum_data_bact <- all_data_repsum[all_data_repsum$Time_day > 0 &
+                              all_data_repsum$Study == "Mumford_Friman" &
+                              all_data_repsum$Pop == "P_aeruginosa", ]
+mum_data_bact$geno_com_phg <- paste(mum_data_bact$Focal_strain,
+                                    mum_data_bact$Bact_community,
+                                    mum_data_bact$Phage_presence,
+                                    sep = "_")
+
+model_mum_bact <- lm(log10(dens_rep_avg+1) ~ 
+                       Bact_community*Focal_strain*Phage_presence,
+                 data = mum_data_bact)
 summary(model_mum_bact)
 
+#Planned contrasts
+# PAO1 PA vs PAO1 pairs & PAO1 trio
+# PAO1 PA va lasR Pa
+# lasR Pa vs lasR pairs & lasR trio
+# 
+
+mum_bact_model <- "
+  model{
+    for(i in 1:length(dens_rep_avg)){
+      dens_rep_avg[i] ~ dnorm(mu[i], tau)
+      mu[i] <- geno_com_phg_int[geno_com_phg[i]]
+    }
+    tau <- 1 / (sig * sig)
+    
+    sig ~ dunif(0, 100)
+    for(i in 1:n_geno_com_phg){
+      geno_com_phg_int[i] ~ dnorm(0, 1.0E-3)
+    }
+  }"
+
+#build the model (this includes, by default, 1000 adaptation steps)
+mum_bact_jgsmdl <- 
+  jags.model(file = textConnection(mum_bact_model),
+             data = list(dens_rep_avg = log10(mum_data_bact$dens_rep_avg+1),
+                         geno_com_phg = as.factor(mum_data_bact$geno_com_phg),
+                         n_geno_com_phg = length(unique(mum_data_bact$geno_com_phg))),
+             inits = list(sig = 3, 
+                          geno_com_phg_int = rep(8, length(unique(mum_data_bact$geno_com_phg)))),
+             n.adapt = 1000)
+#burn-in 1000 steps
+update(mum_bact_jgsmdl, n.iter = 1000)
+#collect samples
+mum_bact_jgs_samples <- 
+  coda.samples(mum_bact_jgsmdl, 
+               variable.names = c("sig", "geno_com_phg_int"), 
+               30000)
+mum_bact_jgs_samples_df <- as.data.frame(mum_bact_jgs_samples[[1]])
+
+#Plot outcomes (check that has reached convergence)
+traceplot(mum_bact_jgs_samples)
+densplot(mum_bact_jgs_samples)
+
+summary(mum_bact_jgs_samples)
+
+levels(as.factor(mum_data_bact$geno_com_phg))
+
+colnames(mum_bact_jgs_samples_df)[1:16] <-
+  paste(levels(as.factor(mum_data_bact$geno_com_phg)),
+        "_int", sep = "")
+
+mum_contrasts <- 
+  data.frame(matrix(data = c(9, 11, 1, 1,
+                             9, 11, 2, 1,
+                             9, 15, 1, 1,
+                             9, 15, 2, 1,
+                             9, 13, 1, 1,
+                             9, 13, 3, 1,
+                             
+                             1, 3, 1, 1,
+                             1, 3, 2, 1,
+                             1, 7, 1, 1,
+                             1, 7, 2, 1,
+                             1, 5, 1, 1,
+                             1, 5, 3, 1,
+                             
+                             10, 12, 1, 1,
+                             10, 12, 2, 1,
+                             10, 16, 1, 1,
+                             10, 16, 2, 1,
+                             10, 14, 1, 1,
+                             10, 14, 3, 1,
+                             
+                             2, 4, 1, 1,
+                             2, 4, 2, 1,
+                             2, 8, 1, 1,
+                             2, 8, 2, 1,
+                             2, 6, 1, 1,
+                             2, 6, 3, 1),
+                    byrow = TRUE))
+colnames(mum_contrasts) <- c("first_int", "second_int",
+                             "divisor_first", "divisor_second")
+
+                             
+
+#Let's say we tidied this dataset so that cols were:
+#MCMC sample #
+#genotype
+#community
+#phage presence
+#MCMC intercept value
+
+#then you could group by sample #, genotype, & phage
+# and calculate all the paired community differences
+# but could you do that last step? dimensions are wrong?...
+
+mum_data_phg <- all_data_repsum[all_data_repsum$Time_day > 0 &
+                                  all_data_repsum$Study == "Mumford_Friman" &
+                                  all_data_repsum$Pop == "PT7", ]
 model_mum_phg <- lm(log10(dens_rep_avg) ~ Bact_community*Time_day*Focal_strain,
-                all_data_repsum[all_data_repsum$Time_day > 0 &
-                                all_data_repsum$Study == "Mumford_Friman" &
-                                all_data_repsum$Pop == "PT7", ])
+                data = mum_data_phg)
 summary(model_mum_phg)
 ##Only sig effect is that phage declines over time
 
-model_alseth_bact <- lm(log10(dens_rep_avg) ~ Bact_community*Time_day,
-                    all_data_repsum[all_data_repsum$Time_day > 0 &
+#Alseth ----
+alseth_data_bact <- all_data_repsum[all_data_repsum$Time_day > 0 &
                                       all_data_repsum$Study == "Alseth_etal" &
-                                      all_data_repsum$Pop == "PA14", ])
+                                      all_data_repsum$Pop == "PA14", ]
+model_alseth_bact <- lm(log10(dens_rep_avg) ~ Bact_community*Time_day,
+                        alseth_data_bact)
 summary(model_alseth_bact)
-##PA dens is suppressed by           
 
-
+#What is effect of comm on phage density          
+alseth_data_phg <- all_data_repsum[all_data_repsum$Time_day > 0 &
+                                     all_data_repsum$Study == "Alseth_etal" &
+                                     all_data_repsum$Pop == "DMS3vir", ]
 model_alseth_phg <- lm(log10(dens_rep_avg) ~ Bact_community*Time_day,
-                       all_data_repsum[all_data_repsum$Time_day > 0 &
-                                         all_data_repsum$Study == "Alseth_etal" &
-                                         all_data_repsum$Pop == "DMS3vir", ])
+                       alseth_data_phg)
 summary(model_alseth_phg)
-##Phages decline faster over time with BC
 
 #Johnke ----
 johnke_data_bact <- all_data_repsum[all_data_repsum$Time_day > 0 &
@@ -180,9 +285,16 @@ johnke_data_bact$com_phg <- paste(johnke_data_bact$Bact_community,
                                    johnke_data_bact$Phage_presence,
                                    sep = "_")
 
+#what is effect of comm on Kleb dens relative to monoculture
 model_johnke_bact <- lm(log10(dens_rep_avg+1) ~ com_phg*Time_day,
              johnke_data_bact)
 summary(model_johnke_bact)
+
+model_johnke_bact2 <- 
+  lm(log10(dens_rep_avg+1) ~ 
+       relevel(as.factor(com_phg), ref = "K_Phage present")*Time_day,
+     johnke_data_bact)
+summary(model_johnke_bact2)
 
 johnke_bact_model <- "
   model{
@@ -239,11 +351,11 @@ johnke_bact_jgs_samples_df$diff_phg <-
   johnke_bact_jgs_samples_df$`com_phg_int[4]`
 #positive = higher proportional density in monoculture in absence of phage
 johnke_bact_jgs_samples_df$diff_prop_nophg <- 
-  johnke_bact_jgs_samples_df$`com_phg_int[1]`/3 - 
+  (johnke_bact_jgs_samples_df$`com_phg_int[1]` - log10(3)) - 
   johnke_bact_jgs_samples_df$`com_phg_int[3]`
 #positive = higher proportional density in monoculture in presence of phage
 johnke_bact_jgs_samples_df$diff_prop_phg <- 
-  johnke_bact_jgs_samples_df$`com_phg_int[2]`/3 - 
+  (johnke_bact_jgs_samples_df$`com_phg_int[2]`- log10(3)) - 
   johnke_bact_jgs_samples_df$`com_phg_int[4]`
 
 for (i in 10:13) {
@@ -252,12 +364,28 @@ for (i in 10:13) {
 }
 
 apply(johnke_bact_jgs_samples_df[, 10:13],
-      MARGIN = 2, FUN = function(x) {mean(x < 0)})
+      MARGIN = 2, FUN = function(x) {mean(x > 0)})
+
+temp <- tidyr::pivot_longer(johnke_bact_jgs_samples_df,
+                            cols = 10:13,
+                            names_to = "contrast",
+                            values_to = "obs")
+ggplot(data = temp,
+       mapping = aes(x = -obs)) +
+  geom_histogram() +
+  facet_grid(contrast ~ .) +
+  theme_bw() +
+  geom_vline(xintercept = 0, lty = 2) +
+  labs(y = "MCMC Difference in Means Count",
+       x = "<-- Community suppresses more than null  |  Community suppresses less than null -->")
+
 
 #Phage
 johnke_data_phg <- all_data_repsum[all_data_repsum$Time_day > 0 &
                                      all_data_repsum$Study == "Johnke_etal" &
                                      all_data_repsum$Pop == "Kleb_phage", ]
+
+#what is effect of comm on phg dens relative to monoculture
 model_jon_phg <- lm(log10(dens_rep_avg) ~ Bact_community*Time_day,
                     johnke_data_phg)
 summary(model_jon_phg)
