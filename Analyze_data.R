@@ -55,6 +55,9 @@ all_data_popsum <- summarize(all_data_repsum,
                              dens_pop_sd = sd(dens_rep_avg, na.rm = TRUE),
                              dens_pop_n = sum(sapply(dens_rep_avg, is.numeric)))
 
+#Add log10-transformed col
+all_data_repsum$dens_rep_avg_log10 <- log10(all_data_repsum$dens_rep_avg+1)
+
 #Plots ----
 dir.create("./Plots", showWarnings = FALSE)
 
@@ -153,21 +156,17 @@ mum_data_bact$geno_com_phg <- paste(mum_data_bact$Focal_strain,
                                     mum_data_bact$Phage_presence,
                                     sep = "_")
 
+#Note: Mumford did all their stats so I don't have to re-do them
 model_mum_bact <- lm(log10(dens_rep_avg+1) ~ 
                        Bact_community*Focal_strain*Phage_presence,
                  data = mum_data_bact)
 summary(model_mum_bact)
 
-#Planned contrasts
-# PAO1 PA vs PAO1 pairs & PAO1 trio
-# PAO1 PA va lasR Pa
-# lasR Pa vs lasR pairs & lasR trio
-# 
-
+#Bayesian test of alternate ecological hypotheses
 mum_bact_model <- "
   model{
-    for(i in 1:length(dens_rep_avg)){
-      dens_rep_avg[i] ~ dnorm(mu[i], tau)
+    for(i in 1:length(dens_rep_avg_log10)){
+      dens_rep_avg_log10[i] ~ dnorm(mu[i], tau)
       mu[i] <- geno_com_phg_int[geno_com_phg[i]]
     }
     tau <- 1 / (sig * sig)
@@ -181,7 +180,7 @@ mum_bact_model <- "
 #build the model (this includes, by default, 1000 adaptation steps)
 mum_bact_jgsmdl <- 
   jags.model(file = textConnection(mum_bact_model),
-             data = list(dens_rep_avg = log10(mum_data_bact$dens_rep_avg+1),
+             data = list(dens_rep_avg_log10 = mum_data_bact$dens_rep_avg_log10,
                          geno_com_phg = as.factor(mum_data_bact$geno_com_phg),
                          n_geno_com_phg = length(unique(mum_data_bact$geno_com_phg))),
              inits = list(sig = 3, 
@@ -193,7 +192,7 @@ update(mum_bact_jgsmdl, n.iter = 1000)
 mum_bact_jgs_samples <- 
   coda.samples(mum_bact_jgsmdl, 
                variable.names = c("sig", "geno_com_phg_int"), 
-               30000)
+               50000)
 mum_bact_jgs_samples_df <- as.data.frame(mum_bact_jgs_samples[[1]])
 
 #Plot outcomes (check that has reached convergence)
@@ -202,13 +201,11 @@ densplot(mum_bact_jgs_samples)
 
 summary(mum_bact_jgs_samples)
 
-levels(as.factor(mum_data_bact$geno_com_phg))
-
 colnames(mum_bact_jgs_samples_df)[1:16] <-
   paste(levels(as.factor(mum_data_bact$geno_com_phg)),
         "_int", sep = "")
 
-mum_contrasts <- 
+mum_bact_contrasts <- 
   data.frame(matrix(data = c(9, 11, 1, 1,
                              9, 11, 2, 1,
                              9, 15, 1, 1,
@@ -236,30 +233,127 @@ mum_contrasts <-
                              2, 8, 2, 1,
                              2, 6, 1, 1,
                              2, 6, 3, 1),
-                    byrow = TRUE))
-colnames(mum_contrasts) <- c("first_int", "second_int",
+                    byrow = TRUE, ncol = 4))
+colnames(mum_bact_contrasts) <- c("first_int", "second_int",
                              "divisor_first", "divisor_second")
 
+for (i in 1:nrow(mum_bact_contrasts)) {
+  mum_bact_jgs_samples_df[, paste("contrast", i, sep = "_")] <-
+    (mum_bact_jgs_samples_df[, mum_bact_contrasts[i, 2]] - log10(mum_bact_contrasts[i, 4])) -
+    (mum_bact_jgs_samples_df[, mum_bact_contrasts[i, 1]] - log10(mum_bact_contrasts[i, 3]))
+}
                              
+for (i in grep("contrast", colnames(mum_bact_jgs_samples_df))) {
+  hist(mum_bact_jgs_samples_df[, i],
+       main = paste(colnames(mum_bact_jgs_samples_df)[i],
+                    mean(mum_bact_jgs_samples_df[, i] < 0), "< 0"),
+       plot = TRUE)
+  
+}
 
-#Let's say we tidied this dataset so that cols were:
-#MCMC sample #
-#genotype
-#community
-#phage presence
-#MCMC intercept value
+mum_bact_contrasts_res <- mum_bact_contrasts
+mum_bact_contrasts_res$first_int <- colnames(mum_bact_jgs_samples_df)[mum_bact_contrasts_res$first_int]
+mum_bact_contrasts_res$second_int <- colnames(mum_bact_jgs_samples_df)[mum_bact_contrasts_res$second_int]
+colnames(mum_bact_contrasts_res)[3:4] <- c("Adjusted", "Diff < 0")
+mum_bact_contrasts_res$Adjusted <- mum_bact_contrasts_res$Adjusted != 1
+mum_bact_contrasts_res$`Diff < 0` <- 
+  apply(mum_bact_jgs_samples_df[, grep("contrast", colnames(mum_bact_jgs_samples_df))],
+        MARGIN = 2,
+        FUN = function(x) {mean(x < 0)})
+mum_bact_contrasts_res <- tidyr::pivot_wider(mum_bact_contrasts_res,
+                                        names_from = Adjusted,
+                                        values_from = `Diff < 0`,
+                                        names_prefix = "Adjusted=")
 
-#then you could group by sample #, genotype, & phage
-# and calculate all the paired community differences
-# but could you do that last step? dimensions are wrong?...
-
+##Mumford phage
 mum_data_phg <- all_data_repsum[all_data_repsum$Time_day > 0 &
                                   all_data_repsum$Study == "Mumford_Friman" &
                                   all_data_repsum$Pop == "PT7", ]
 model_mum_phg <- lm(log10(dens_rep_avg) ~ Bact_community*Time_day*Focal_strain,
                 data = mum_data_phg)
 summary(model_mum_phg)
-##Only sig effect is that phage declines over time
+
+#Bayesian
+mum_data_phg$geno_com <- paste(mum_data_phg$Focal_strain,
+                               mum_data_phg$Bact_community,
+                               sep = "_")
+mum_phg_model <- "
+  model{
+    for(i in 1:length(dens_rep_avg_log10)){
+      dens_rep_avg_log10[i] ~ dnorm(mu[i], tau)
+      mu[i] <- geno_com_int[geno_com[i]] + geno_com_slp[geno_com[i]]*Time_day[i]
+    }
+    tau <- 1 / (sig * sig)
+    
+    sig ~ dunif(0, 100)
+    for(i in 1:n_geno_com_trt){
+      geno_com_int[i] ~ dnorm(0, 1.0E-3)
+      geno_com_slp[i] ~ dnorm(0, 1.0E-3)
+    }
+  }"
+
+#build the model (this includes, by default, 1000 adaptation steps)
+mum_phg_jgsmdl <- 
+  jags.model(file = textConnection(mum_phg_model),
+             data = list(dens_rep_avg_log10 = mum_data_phg$dens_rep_avg_log10,
+                         Time_day = mum_data_phg$Time_day,
+                         geno_com = as.factor(mum_data_phg$geno_com),
+                         n_geno_com_trt = length(unique(mum_data_phg$geno_com))),
+             inits = list(sig = 3, geno_com_int = rep(8, 8), 
+                          geno_com_slp = rep(0, 8)),
+             n.adapt = 1000)
+#burn-in 1000 steps
+update(mum_phg_jgsmdl, n.iter = 1000)
+#collect samples
+mum_phg_jgs_samples <- 
+  coda.samples(mum_phg_jgsmdl, 
+               variable.names = c("sig", "geno_com_int", "geno_com_slp"), 
+               50000)
+mum_phg_jgs_samples_df <- as.data.frame(mum_phg_jgs_samples[[1]])
+
+colnames(mum_phg_jgs_samples_df)[1:8] <-
+  paste(levels(as.factor(mum_data_phg$geno_com)),
+        "_int", sep = "")
+
+summary(mum_phg_jgs_samples)
+
+mum_phg_contrasts <- 
+  data.frame(matrix(data = c(5, 6, 1, 1,
+                             5, 6, 2, 1,
+                             5, 8, 1, 1,
+                             5, 8, 2, 1,
+                             5, 7, 1, 1,
+                             5, 7, 3, 1,
+                             
+                             1, 2, 1, 1,
+                             1, 2, 2, 1,
+                             1, 4, 1, 1,
+                             1, 4, 2, 1,
+                             1, 3, 1, 1,
+                             1, 3, 3, 1),
+                    byrow = TRUE, ncol = 4))
+colnames(mum_phg_contrasts) <- c("first_int", "second_int",
+                                  "divisor_first", "divisor_second")
+
+for (i in 1:nrow(mum_phg_contrasts)) {
+  mum_phg_jgs_samples_df[, paste("contrast", i, sep = "_")] <-
+    (mum_phg_jgs_samples_df[, mum_phg_contrasts[i, 2]] - log10(mum_phg_contrasts[i, 4])) -
+    (mum_phg_jgs_samples_df[, mum_phg_contrasts[i, 1]] - log10(mum_phg_contrasts[i, 3]))
+}
+
+mum_phg_contrasts_res <- mum_phg_contrasts
+mum_phg_contrasts_res$first_int <- colnames(mum_phg_jgs_samples_df)[mum_phg_contrasts_res$first_int]
+mum_phg_contrasts_res$second_int <- colnames(mum_phg_jgs_samples_df)[mum_phg_contrasts_res$second_int]
+colnames(mum_phg_contrasts_res)[3:4] <- c("Adjusted", "Diff < 0")
+mum_phg_contrasts_res$Adjusted <- mum_phg_contrasts_res$Adjusted != 1
+mum_phg_contrasts_res$`Diff < 0` <- 
+  apply(mum_phg_jgs_samples_df[, grep("contrast", colnames(mum_phg_jgs_samples_df))],
+        MARGIN = 2,
+        FUN = function(x) {mean(x < 0)})
+mum_phg_contrasts_res <- tidyr::pivot_wider(mum_phg_contrasts_res,
+                                             names_from = Adjusted,
+                                             values_from = `Diff < 0`,
+                                             names_prefix = "Adjusted=")
 
 #Alseth ----
 alseth_data_bact <- all_data_repsum[all_data_repsum$Time_day > 0 &
@@ -276,6 +370,80 @@ alseth_data_phg <- all_data_repsum[all_data_repsum$Time_day > 0 &
 model_alseth_phg <- lm(log10(dens_rep_avg) ~ Bact_community*Time_day,
                        alseth_data_phg)
 summary(model_alseth_phg)
+
+#Bayesian
+alseth_phg_model <- "
+  model{
+    for(i in 1:length(dens_rep_avg_log10)){
+      dens_rep_avg_log10[i] ~ dnorm(mu[i], tau)
+      mu[i] <- com_int[Bact_community[i]] + com_slp[Bact_community[i]]*Time_day[i]
+    }
+    tau <- 1 / (sig * sig)
+    
+    sig ~ dunif(0, 100)
+    for(i in 1:n_com_trt){
+      com_int[i] ~ dnorm(0, 1.0E-3)
+      com_slp[i] ~ dnorm(0, 1.0E-3)
+    }
+  }"
+
+#build the model (this includes, by default, 1000 adaptation steps)
+alseth_phg_jgsmdl <- 
+  jags.model(file = textConnection(alseth_phg_model),
+             data = list(dens_rep_avg_log10 = alseth_data_phg$dens_rep_avg_log10,
+                         Time_day = alseth_data_phg$Time_day,
+                         Bact_community = droplevels(as.factor(alseth_data_phg$Bact_community)),
+                         n_com_trt = length(unique(alseth_data_phg$Bact_community))),
+             inits = list(sig = 3, com_int = rep(8, 6), 
+                          com_slp = rep(0, 6)),
+             n.adapt = 1000)
+#burn-in 1000 steps
+update(alseth_phg_jgsmdl, n.iter = 1000)
+#collect samples
+alseth_phg_jgs_samples <- 
+  coda.samples(alseth_phg_jgsmdl, 
+               variable.names = c("sig", "com_int", "com_slp"), 
+               50000)
+alseth_phg_jgs_samples_df <- as.data.frame(alseth_phg_jgs_samples[[1]])
+
+colnames(alseth_phg_jgs_samples_df)[1:6] <-
+  paste(levels(droplevels(as.factor(alseth_data_phg$Bact_community))),
+        "_int", sep = "")
+
+summary(alseth_phg_jgs_samples)
+
+alseth_phg_contrasts <- 
+  data.frame(matrix(data = c(1, 2, 1, 1,
+                             1, 2, 2, 1,
+                             1, 3, 1, 1,
+                             1, 3, 2, 1,
+                             1, 4, 1, 1,
+                             1, 4, 2, 1,
+                             1, 5, 1, 1,
+                             1, 5, 4, 1),
+                    byrow = TRUE, ncol = 4))
+colnames(alseth_phg_contrasts) <- c("first_int", "second_int",
+                                 "divisor_first", "divisor_second")
+
+for (i in 1:nrow(alseth_phg_contrasts)) {
+  alseth_phg_jgs_samples_df[, paste("contrast", i, sep = "_")] <-
+    (alseth_phg_jgs_samples_df[, alseth_phg_contrasts[i, 2]] - log10(alseth_phg_contrasts[i, 4])) -
+    (alseth_phg_jgs_samples_df[, alseth_phg_contrasts[i, 1]] - log10(alseth_phg_contrasts[i, 3]))
+}
+
+alseth_phg_contrasts_res <- alseth_phg_contrasts
+alseth_phg_contrasts_res$first_int <- colnames(alseth_phg_jgs_samples_df)[alseth_phg_contrasts_res$first_int]
+alseth_phg_contrasts_res$second_int <- colnames(alseth_phg_jgs_samples_df)[alseth_phg_contrasts_res$second_int]
+colnames(alseth_phg_contrasts_res)[3:4] <- c("Adjusted", "Diff < 0")
+alseth_phg_contrasts_res$Adjusted <- alseth_phg_contrasts_res$Adjusted != 1
+alseth_phg_contrasts_res$`Diff < 0` <- 
+  apply(alseth_phg_jgs_samples_df[, grep("contrast", colnames(alseth_phg_jgs_samples_df))],
+        MARGIN = 2,
+        FUN = function(x) {mean(x < 0)})
+alseth_phg_contrasts_res <- tidyr::pivot_wider(alseth_phg_contrasts_res,
+                                            names_from = Adjusted,
+                                            values_from = `Diff < 0`,
+                                            names_prefix = "Adjusted=")
 
 #Johnke ----
 johnke_data_bact <- all_data_repsum[all_data_repsum$Time_day > 0 &
@@ -296,10 +464,11 @@ model_johnke_bact2 <-
      johnke_data_bact)
 summary(model_johnke_bact2)
 
+#Bayesian
 johnke_bact_model <- "
   model{
-    for(i in 1:length(dens_rep_avg)){
-      dens_rep_avg[i] ~ dnorm(mu[i], tau)
+    for(i in 1:length(dens_rep_avg_log10)){
+      dens_rep_avg_log10[i] ~ dnorm(mu[i], tau)
       mu[i] <- com_phg_int[com_phg[i]] + com_phg_slp[com_phg[i]]*Time_day[i]
     }
     tau <- 1 / (sig * sig)
@@ -313,7 +482,7 @@ johnke_bact_model <- "
 
 #build the model (this includes, by default, 1000 adaptation steps)
 johnke_bact_jgsmdl <- jags.model(file = textConnection(johnke_bact_model),
-                 data = list(dens_rep_avg = log10(johnke_data_bact$dens_rep_avg+1),
+                 data = list(dens_rep_avg_log10 = johnke_data_bact$dens_rep_avg_log10,
                              Time_day = johnke_data_bact$Time_day,
                              com_phg = as.factor(johnke_data_bact$com_phg),
                              n_com_phg_trt = length(unique(johnke_data_bact$com_phg))),
@@ -326,7 +495,7 @@ update(johnke_bact_jgsmdl, n.iter = 1000)
 johnke_bact_jgs_samples <- 
     coda.samples(johnke_bact_jgsmdl, 
                  variable.names = c("sig", "com_phg_int", "com_phg_slp"), 
-                 30000)
+                 50000)
 johnke_bact_jgs_samples_df <- as.data.frame(johnke_bact_jgs_samples[[1]])
 
 #Plot outcomes (check that has reached convergence)
@@ -341,22 +510,22 @@ levels(as.factor(johnke_data_bact$com_phg))
 #3 - KPS, no phg
 #4 - KPS, phg
 
-#positive = higher density in monoculture in absence of phage
+#positive = coculture higher than monoculture (phage absent)
 johnke_bact_jgs_samples_df$diff_nophg <- 
-  johnke_bact_jgs_samples_df$`com_phg_int[1]` - 
-  johnke_bact_jgs_samples_df$`com_phg_int[3]`
-#positive = higher density in monoculture in presence of phage
-johnke_bact_jgs_samples_df$diff_phg <- 
-  johnke_bact_jgs_samples_df$`com_phg_int[2]` - 
-  johnke_bact_jgs_samples_df$`com_phg_int[4]`
-#positive = higher proportional density in monoculture in absence of phage
+  johnke_bact_jgs_samples_df$`com_phg_int[3]` -
+  johnke_bact_jgs_samples_df$`com_phg_int[1]`
+#positive = coculture higher than expected from 1/3 mono (phage -)
 johnke_bact_jgs_samples_df$diff_prop_nophg <- 
-  (johnke_bact_jgs_samples_df$`com_phg_int[1]` - log10(3)) - 
-  johnke_bact_jgs_samples_df$`com_phg_int[3]`
-#positive = higher proportional density in monoculture in presence of phage
+  johnke_bact_jgs_samples_df$`com_phg_int[3]` -
+  (johnke_bact_jgs_samples_df$`com_phg_int[1]` - log10(3)) 
+#positive = coculture higher than mono (phage present)
+johnke_bact_jgs_samples_df$diff_phg <- 
+  johnke_bact_jgs_samples_df$`com_phg_int[4]` -
+  johnke_bact_jgs_samples_df$`com_phg_int[2]`
+#positive = coculture higher than expected from 1/3 mono (phage +)
 johnke_bact_jgs_samples_df$diff_prop_phg <- 
-  (johnke_bact_jgs_samples_df$`com_phg_int[2]`- log10(3)) - 
-  johnke_bact_jgs_samples_df$`com_phg_int[4]`
+  johnke_bact_jgs_samples_df$`com_phg_int[4]` -
+  (johnke_bact_jgs_samples_df$`com_phg_int[2]`- log10(3))
 
 for (i in 10:13) {
   hist(johnke_bact_jgs_samples_df[, i],
@@ -364,7 +533,7 @@ for (i in 10:13) {
 }
 
 apply(johnke_bact_jgs_samples_df[, 10:13],
-      MARGIN = 2, FUN = function(x) {mean(x > 0)})
+      MARGIN = 2, FUN = function(x) {mean(x < 0)})
 
 temp <- tidyr::pivot_longer(johnke_bact_jgs_samples_df,
                             cols = 10:13,
@@ -379,7 +548,6 @@ ggplot(data = temp,
   labs(y = "MCMC Difference in Means Count",
        x = "<-- Community suppresses more than null  |  Community suppresses less than null -->")
 
-
 #Phage
 johnke_data_phg <- all_data_repsum[all_data_repsum$Time_day > 0 &
                                      all_data_repsum$Study == "Johnke_etal" &
@@ -392,8 +560,8 @@ summary(model_jon_phg)
 
 johnke_phg_model <- "
   model{
-    for(i in 1:length(dens_rep_avg)){
-      dens_rep_avg[i] ~ dnorm(mu[i], tau)
+    for(i in 1:length(dens_rep_avg_log10)){
+      dens_rep_avg_log10[i] ~ dnorm(mu[i], tau)
       mu[i] <- com_int[Bact_community[i]] + com_slp[Bact_community[i]]*Time_day[i]
     }
     tau <- 1 / (sig * sig)
@@ -408,7 +576,7 @@ johnke_phg_model <- "
 #build the model (this includes, by default, 1000 adaptation steps)
 johnke_phg_jgsmdl <- 
   jags.model(file = textConnection(johnke_phg_model),
-             data = list(dens_rep_avg = log10(johnke_data_phg$dens_rep_avg+1),
+             data = list(dens_rep_avg_log10 = johnke_data_phg$dens_rep_avg_log10,
                          Time_day = johnke_data_phg$Time_day,
                          Bact_community = droplevels(johnke_data_phg$Bact_community),
                          n_com_trt = length(unique(johnke_data_phg$Bact_community))),
@@ -433,14 +601,14 @@ levels(droplevels(johnke_data_phg$Bact_community))
 #1 - K solo, phg
 #2 - KPS, phg
 
-#positive = higher density in monoculture in presence of phage
+#positive = higher density in comm than monoculture (+ phage)
 johnke_phg_jgs_samples_df$diff_phg <- 
-  johnke_phg_jgs_samples_df$`com_int[1]` - 
-  johnke_phg_jgs_samples_df$`com_int[2]`
-#positive = higher proportional density in monoculture in presence of phage
+  johnke_phg_jgs_samples_df$`com_int[2]` -
+  johnke_phg_jgs_samples_df$`com_int[1]`
+#positive = higher density in comm than expected from monoculture (+ phage)
 johnke_phg_jgs_samples_df$diff_prop_phg <- 
-  johnke_phg_jgs_samples_df$`com_int[1]`/3 - 
-  johnke_phg_jgs_samples_df$`com_int[2]`
+  johnke_phg_jgs_samples_df$`com_int[2]` -
+  (johnke_phg_jgs_samples_df$`com_int[1]` - log10(3))
 
 for (i in 6:7) {
   hist(johnke_phg_jgs_samples_df[, i],
@@ -448,4 +616,4 @@ for (i in 6:7) {
 }
 
 apply(johnke_phg_jgs_samples_df[, 6:7],
-      MARGIN = 2, FUN = function(x) {mean(x < 0)})
+      MARGIN = 2, FUN = function(x) {mean(x > 0)})
