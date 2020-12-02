@@ -617,3 +617,35 @@ for (i in 6:7) {
 
 apply(johnke_phg_jgs_samples_df[, 6:7],
       MARGIN = 2, FUN = function(x) {mean(x > 0)})
+
+
+##Make citation network graph
+cits <- read.csv("./Clean_data/citation_network.csv", 
+                 stringsAsFactors = FALSE, row.names = 1)
+#Note that format is the rows cite the columns
+
+row.names(cits) <- gsub(x = row.names(cits), 
+                            pattern = "(\\s|\\.)+", 
+                            replacement = "_", fixed = FALSE)
+colnames(cits) <- gsub(x = colnames(cits),
+                       pattern = "(\\.)+",
+                       replacement = "_", fixed = FALSE)
+
+# net <- graph_from_incidence_matrix(cits, directed = TRUE,
+#                                    mode = "out", add.names = TRUE)
+net <- graph_from_adjacency_matrix(as.matrix(cits),
+                                   mode = "directed",
+                                   add.colnames = TRUE,
+                                   add.rownames = TRUE)
+
+set.seed(12)
+png("./Plots/citation_network.png",
+    width = 4, height = 4, units = "in", res = 300)
+print(plot(net, 
+           vertex.label = row.names(cits), vertex.label.color = "black",
+           vertex.color = "black", vertex.size = 5,
+           edge.color = "gray50",
+           vertex.label.dist = 2, vertex.label.cex = 0.7,
+           edge.arrow.size = .5, edge.arrow.width = 1.5,
+           edge.width = 2, margin = c(0, 0, 0, 0)))
+dev.off()
