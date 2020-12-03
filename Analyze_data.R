@@ -616,7 +616,7 @@ for (i in 6:7) {
 }
 
 apply(johnke_phg_jgs_samples_df[, 6:7],
-      MARGIN = 2, FUN = function(x) {mean(x > 0)})
+      MARGIN = 2, FUN = function(x) {mean(x < 0)})
 
 
 ##Make citation network graph
