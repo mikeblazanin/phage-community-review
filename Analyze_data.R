@@ -265,6 +265,21 @@ mum_bact_contrasts_res <- tidyr::pivot_wider(mum_bact_contrasts_res,
                                         values_from = `Diff < 0`,
                                         names_prefix = "Adjusted=")
 
+#Plotting simulated means against ea other to see if there's a pattern
+for (i in 1:nrow(mum_bact_contrasts)) {
+  if(mum_bact_contrasts[i, 3] == 1 &
+     mum_bact_contrasts[i, 4] == 1) {
+    print(plot(mum_bact_jgs_samples_df[, mum_bact_contrasts[i, 1]],
+               mum_bact_jgs_samples_df[, mum_bact_contrasts[i, 2]],
+               xlab = colnames(mum_bact_jgs_samples_df)[mum_bact_contrasts[i, 1]],
+               ylab = colnames(mum_bact_jgs_samples_df)[mum_bact_contrasts[i, 2]],
+               type = "p", pch = 20, col = rgb(0, 0, 0, 0.1), cex = 0.5,
+               main = cor(mum_bact_jgs_samples_df[, mum_bact_contrasts[i, 1]],
+                          mum_bact_jgs_samples_df[, mum_bact_contrasts[i, 2]])))
+  }
+}
+
+
 ##Mumford phage
 mum_data_phg <- all_data_repsum[all_data_repsum$Time_day > 0 &
                                   all_data_repsum$Study == "Mumford_Friman" &
@@ -649,3 +664,55 @@ print(plot(net,
            edge.arrow.size = .5, edge.arrow.width = 1.5,
            edge.width = 2, margin = c(0, 0, 0, 0)))
 dev.off()
+
+##Simulated density data ----
+set.seed(1)
+sim_data <- data.frame(trt = rep(c("no_comm", "comm"), each = 10),
+                       dens_log10 = c(rnorm(10, mean = 9, sd = 0.6),
+                                      rnorm(10, mean = 9 - log10(3), sd = 0.6)))
+ggplot(data = sim_data, aes(x = trt, y = dens_log10)) +
+  geom_point()
+
+#Bayesian
+sim_bact_model <- "
+  model{
+    for(i in 1:length(dens_log10)){
+      dens_log10[i] ~ dnorm(mu[i], tau)
+      mu[i] <- trt_int[trt[i]]
+    }
+    tau <- 1 / (sig * sig)
+    
+    sig ~ dunif(0, 100)
+    for(i in 1:n_trt){
+      trt_int[i] ~ dnorm(0, 1.0E-3)
+    }
+  }"
+
+#build the model (this includes, by default, 1000 adaptation steps)
+sim_bact_jgsmdl <- jags.model(file = textConnection(sim_bact_model),
+                                 data = list(dens_log10 = sim_data$dens_log10,
+                                             trt = as.factor(sim_data$trt),
+                                             n_trt = length(unique(sim_data$trt))),
+                                 inits = list(sig = 3, trt_int = c(8, 8)),
+                                 n.adapt = 1000)
+#burn-in 1000 steps
+update(sim_bact_jgsmdl, n.iter = 1000)
+#collect samples
+sim_bact_jgs_samples <- 
+  coda.samples(sim_bact_jgsmdl, 
+               variable.names = c("sig", "trt_int"), 
+               50000)
+sim_bact_jgs_samples_df <- as.data.frame(sim_bact_jgs_samples[[1]])
+
+ggplot(data = tidyr::pivot_longer(sim_bact_jgs_samples_df,
+                                  cols = c(2, 3),
+                                  names_to = "trt",
+                                  values_to = "Bayesian_mean"),
+       aes(y = Bayesian_mean)) +
+  geom_histogram() +
+  geom_point(data = sim_data, mapping = aes(x = 0, y = dens_log10)) +
+  facet_grid(~as.factor(trt)) +
+  geom_hline(yintercept = mean(sim_bact_jgs_samples_df$`trt_int[2]`), lty = 2) +
+  geom_hline(yintercept = mean(sim_bact_jgs_samples_df$`trt_int[2]`)-log10(5), lty = 3) +
+  theme_bw()
+       
