@@ -45,8 +45,6 @@ all_data_repsum <- summarize(all_data,
                           dens_rep_sd = sd(Density, na.rm = TRUE),
                           dens_rep_n = sum(sapply(Density, is.numeric)))
 
-##TODO check that repsum is correct!
-
 all_data_repsum <- group_by(all_data_repsum,
                             Study, Focal_strain, Bact_community,
                             Phage_presence, Time_day, Pop)
@@ -669,7 +667,7 @@ dev.off()
 set.seed(1)
 sim_data <- data.frame(trt = rep(c("no_comm", "comm"), each = 10),
                        dens_log10 = c(rnorm(10, mean = 9, sd = 0.6),
-                                      rnorm(10, mean = 9 - log10(3), sd = 0.6)))
+                                      rnorm(10, mean = 9 - log10(8), sd = 0.6)))
 ggplot(data = sim_data, aes(x = trt, y = dens_log10)) +
   geom_point()
 
@@ -703,16 +701,28 @@ sim_bact_jgs_samples <-
                variable.names = c("sig", "trt_int"), 
                50000)
 sim_bact_jgs_samples_df <- as.data.frame(sim_bact_jgs_samples[[1]])
+colnames(sim_bact_jgs_samples_df)[2:3] <- c("comm", "no_comm")
+sim_bact_jgs_samples_lng <- 
+  tidyr::pivot_longer(sim_bact_jgs_samples_df,
+                    cols = c(2, 3),
+                    names_to = "trt",
+                    values_to = "Bayesian_mean")
+sim_bact_jgs_samples_lng$trt <- factor(sim_bact_jgs_samples_lng$trt,
+                                       levels = c("no_comm", "comm"))
 
-ggplot(data = tidyr::pivot_longer(sim_bact_jgs_samples_df,
-                                  cols = c(2, 3),
-                                  names_to = "trt",
-                                  values_to = "Bayesian_mean"),
-       aes(y = Bayesian_mean)) +
+tiff("./Plots/Bayesian_example.tiff", width = 5, height = 3, units = "in", res = 300)
+ggplot(data = sim_bact_jgs_samples_lng, aes(y = Bayesian_mean)) +
   geom_histogram() +
-  geom_point(data = sim_data, mapping = aes(x = 0, y = dens_log10)) +
-  facet_grid(~as.factor(trt)) +
-  geom_hline(yintercept = mean(sim_bact_jgs_samples_df$`trt_int[2]`), lty = 2) +
-  geom_hline(yintercept = mean(sim_bact_jgs_samples_df$`trt_int[2]`)-log10(5), lty = 3) +
-  theme_bw()
-       
+  geom_point(data = sim_data, mapping = aes(x = 0, y = dens_log10),
+             color = "red", size = 2) +
+  facet_grid(~as.factor(trt),
+             labeller = as_labeller(c("no_comm" = "Community Absent",
+                                         "comm" = "Community Present"))) +
+  geom_hline(yintercept = mean(sim_bact_jgs_samples_df$no_comm), lty = 2) +
+  geom_hline(yintercept = mean(sim_bact_jgs_samples_df$no_comm)-log10(3), lty = 3) +
+  #geom_hline(yintercept = mean(sim_bact_jgs_samples_df$no_comm)-log10(6), lty = 3) +
+  theme_bw() +
+  labs(y = "log10 Bacterial Density") +
+  theme(axis.title.x = element_blank(), 
+        axis.text.x = element_text(angle = 45, hjust = 1))
+dev.off()
