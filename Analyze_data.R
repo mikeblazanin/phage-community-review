@@ -471,10 +471,12 @@ model_johnke_bact <- lm(log10(dens_rep_avg+1) ~ com_phg*Time_day,
              johnke_data_bact)
 summary(model_johnke_bact)
 
+johnke_data_bact2 <- johnke_data_bact
+johnke_data_bact2$com_phg <- relevel(as.factor(johnke_data_bact2$com_phg), 
+                                     ref = "K_Phage present")
 model_johnke_bact2 <- 
-  lm(log10(dens_rep_avg+1) ~ 
-       relevel(as.factor(com_phg), ref = "K_Phage present")*Time_day,
-     johnke_data_bact)
+  lm(log10(dens_rep_avg+1) ~ com_phg*Time_day,
+     johnke_data_bact2)
 summary(model_johnke_bact2)
 
 #Bayesian
