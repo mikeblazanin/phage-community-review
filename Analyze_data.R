@@ -91,6 +91,35 @@ ggplot(data = temp_repsum,
         plot.subtitle = element_text(size = 13))
 dev.off()
 
+#Simplified plot of bact only for talks
+temp_repsum <- all_data_repsum[all_data_repsum$Study == "Mumford_Friman" &
+                                 all_data_repsum$Focal_strain == "PAO1" &
+                                 all_data_repsum$Pop == "P_aeruginosa" &
+                                 all_data_repsum$Phage_presence == "Phage absent", ]
+temp_popsum <- all_data_popsum[all_data_popsum$Study == "Mumford_Friman"  &
+                                 all_data_popsum$Focal_strain == "PAO1" &
+                                 all_data_popsum$Pop == "P_aeruginosa" &
+                                 all_data_popsum$Phage_presence == "Phage absent", ]
+tiff("./Plots/Mumford_Friman_simplified.tiff", width = 5, height = 4,
+     units = "in", res = 300)
+ggplot(data = temp_repsum, 
+       aes(x = Bact_community, y = dens_rep_avg+1)) +
+  geom_point(alpha = 0.5) +
+  geom_point(data = temp_popsum, aes(y = dens_pop_avg+1),
+             size = 4) +
+  geom_hline(yintercept = 1, lty = 2) +
+  facet_grid(Phage_presence ~ .) +
+  scale_y_continuous(trans = "log10") +
+  labs(x = "Community Treatment", y = "Bacterial Density + 1") +
+  theme_bw() +
+  theme(axis.title = element_text(size = 16),
+        axis.text.x = element_text(size = 14, angle = 45, hjust = 1),
+        axis.text.y = element_text(size = 14),
+        strip.text = element_text(size = 16),
+        plot.title = element_text(size = 13),
+        plot.subtitle = element_text(size = 13))
+dev.off()
+
 #Alseth
 temp_repsum <- all_data_repsum[all_data_repsum$Study == "Alseth_etal", ]
 temp_popsum <- all_data_popsum[all_data_popsum$Study == "Alseth_etal", ]
@@ -121,6 +150,34 @@ dev.off()
 temp_repsum <- all_data_repsum[all_data_repsum$Study == "Johnke_etal", ]
 temp_popsum <- all_data_popsum[all_data_popsum$Study == "Johnke_etal", ]
 tiff("./Plots/Johnke_etal.tiff", width = 10, height = 5,
+     units = "in", res = 300)
+ggplot(data = temp_repsum,
+       aes(x = Time_day, y = dens_rep_avg+1,
+           color = Pop)) +
+  geom_point(alpha = 0.5) +
+  geom_point(data = temp_popsum, aes(y = dens_pop_avg+1), size = 3) +
+  geom_line(data = temp_popsum, aes(y = dens_pop_avg+1), lwd = 1) +
+  geom_hline(yintercept = 1, lty = 2) +
+  facet_grid(Phage_presence~Bact_community) +
+  scale_y_continuous(trans = "log10") +
+  scale_color_manual(values = my_cols[c(8, 1, 3, 5)]) +
+  labs(x = "Time (days)", y = "Density + 1",
+       color = "Population", subtitle = "Community Treatment") +
+  theme_bw() +
+  theme(axis.title = element_text(size = 16),
+        strip.text.x = element_text(size = 10),
+        strip.text.y = element_text(size = 13),
+        legend.title = element_text(size = 13),
+        legend.text = element_text(size = 12),
+        plot.subtitle = element_text(size = 13))
+dev.off()
+
+#Simplified plot for talks
+temp_repsum <- all_data_repsum[all_data_repsum$Study == "Johnke_etal" &
+                                 all_data_repsum$Pop %in% c("Klebsiella", "Kleb_phage"), ]
+temp_popsum <- all_data_popsum[all_data_popsum$Study == "Johnke_etal" &
+                                 all_data_popsum$Pop %in% c("Klebsiella", "Kleb_phage"), ]
+tiff("./Plots/Johnke_etal_simplified.tiff", width = 6, height = 4,
      units = "in", res = 300)
 ggplot(data = temp_repsum,
        aes(x = Time_day, y = dens_rep_avg+1,
